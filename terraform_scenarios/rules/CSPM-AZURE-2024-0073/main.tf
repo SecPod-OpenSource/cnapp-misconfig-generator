@@ -1,0 +1,65 @@
+terraform {
+  required_version = ">= 1.5.0"
+  required_providers {
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "~> 4.0"
+    }
+    random = {
+      source  = "hashicorp/random"
+      version = "~> 3.0"
+    }
+  }
+}
+
+provider "azurerm" {
+  features {}
+  subscription_id = var.azure_subscription_id
+}
+
+variable "azure_subscription_id" {
+  description = "Azure subscription ID for the dedicated test subscription."
+  type        = string
+}
+
+variable "azure_location" {
+  description = "Azure region for the fixture."
+  type        = string
+  default     = "centralindia"
+}
+
+variable "allow_unsafe_apply" {
+  description = "Must be explicitly true before this intentionally insecure fixture is created."
+  type        = bool
+  default     = false
+}
+
+resource "random_string" "fixture" {
+  length  = 10
+  special = false
+  upper   = false
+}
+
+resource "azurerm_resource_group" "fixture" {
+  count    = var.allow_unsafe_apply ? 1 : 0
+  name     = "cspmazure20240073-rg"
+  location = var.azure_location
+}
+
+resource "azurerm_storage_account" "fixture" {
+  count                           = var.allow_unsafe_apply ? 1 : 0
+  name                            = "cspm${random_string.fixture.result}"
+  resource_group_name             = azurerm_resource_group.fixture[0].name
+  location                        = azurerm_resource_group.fixture[0].location
+  account_tier                    = "Standard"
+  account_replication_type        = "LRS"
+  allow_nested_items_to_be_public = true
+
+}
+
+resource "azurerm_storage_container" "fixture" {
+  count                 = var.allow_unsafe_apply ? 1 : 0
+  name                  = "public"
+  storage_account_id    = azurerm_storage_account.fixture[0].id
+  container_access_type = "blob"
+}

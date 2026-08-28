@@ -1,0 +1,18 @@
+deployments/
+generated/
+.terraform-verify/
+.terraform-format-inspect/
+tests/.test-output/
+
+# Terraform runtime state and provider artifacts
+**/.terraform/
+**/*.tfstate
+**/*.tfstate.*
+**/crash.log
+**/crash.*.log
+**/*.tfvars
+**/*.tfvars.json
+
+# Local credentials
+**/.env
+**/.env.*
