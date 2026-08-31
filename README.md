@@ -88,5 +88,4 @@ guidance. Report vulnerabilities privately as described in
 
 ## License
 
-Select and add a license before publishing. Until a `LICENSE` file is present,
-others do not have permission to reuse, modify, or distribute this project.
+This project is licensed under the [Apache License 2.0](LICENSE).
