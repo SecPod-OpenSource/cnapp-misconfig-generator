@@ -6,7 +6,7 @@ from pathlib import Path
 from unittest.mock import patch
 from contextlib import redirect_stdout
 
-from src.cli import DEFAULT_SCENARIOS_ROOT, command_describe, command_scenario_list, deploy, destroy_batch, generate, provision, provision_batch, run_command, verified_account_id
+from src.cli import DEFAULT_SCENARIOS_ROOT, command_count, command_describe, command_scenario_list, deploy, destroy_batch, generate, provision, provision_batch, run_command, verified_account_id
 from src.scenarios import SCENARIOS
 
 
@@ -72,6 +72,20 @@ class GeneratorTests(unittest.TestCase):
         self.assertIn("SCENARIO ID", text)
         self.assertIn("cspm-aws-ec2-public-ip", text)
         self.assertIn("CSPM-AWS-2024-0027", text)
+
+    def test_count_reports_static_fixture_breakdown(self):
+        output = StringIO()
+        with redirect_stdout(output):
+            command_count(SCENARIOS_ROOT)
+        self.assertEqual(
+            output.getvalue().splitlines(),
+            [
+                "CLOUD\tCSPM\tCIEM\tTOTAL",
+                "AWS\t70\t9\t79",
+                "Azure\t40\t1\t41",
+                "TOTAL\t110\t10\t120",
+            ],
+        )
 
     def test_cnapp_style_ec2_scenarios_are_listed(self):
         output = StringIO()

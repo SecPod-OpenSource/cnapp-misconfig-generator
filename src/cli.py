@@ -38,6 +38,34 @@ def command_list(scenarios_root: Path) -> int:
     return 0
 
 
+def command_count(scenarios_root: Path) -> int:
+    """Print a provider and module breakdown of static Terraform fixtures."""
+    providers = ("AWS", "Azure")
+    modules = ("CSPM", "CIEM")
+    counts = {(provider, module): 0 for provider in providers for module in modules}
+
+    for fixture in scenarios_root.iterdir():
+        if not fixture.is_dir() or not (fixture / "main.tf").is_file():
+            continue
+        parts = fixture.name.split("-", 2)
+        if len(parts) < 2:
+            continue
+        module, provider = parts[:2]
+        provider = "Azure" if provider.upper() == "AZURE" else provider.upper()
+        if (provider, module) in counts:
+            counts[(provider, module)] += 1
+
+    print("CLOUD\tCSPM\tCIEM\tTOTAL")
+    for provider in providers:
+        cspm = counts[(provider, "CSPM")]
+        ciem = counts[(provider, "CIEM")]
+        print(f"{provider}\t{cspm}\t{ciem}\t{cspm + ciem}")
+    cspm_total = sum(counts[(provider, "CSPM")] for provider in providers)
+    ciem_total = sum(counts[(provider, "CIEM")] for provider in providers)
+    print(f"TOTAL\t{cspm_total}\t{ciem_total}\t{cspm_total + ciem_total}")
+    return 0
+
+
 def command_generate_all(scenarios_root: Path, output: Path) -> int:
     for fixture in sorted(scenarios_root.iterdir()):
         if fixture.is_dir() and (fixture / "main.tf").is_file():
@@ -250,6 +278,7 @@ def main(argv: Iterable[str] | None = None) -> int:
     list_parser.add_argument("--provider", type=str.upper, choices=["AWS", "AZURE"], help="Filter scenarios by cloud provider.")
     list_parser.add_argument("--services", action="store_true", help="List services available in the selected module.")
     list_parser.add_argument("--deployment-root", type=Path, default=Path("deployments"))
+    commands.add_parser("count", help="Count static Terraform fixtures by cloud provider and module.")
     scenario_list_parser = commands.add_parser("scenario-list", help="List reviewed scenario catalog entries.")
     scenario_list_parser.add_argument("--module", choices=["CSPM", "CIEM"])
     scenario_list_parser.add_argument("--service", help="Filter scenarios by service, for example S3.")
@@ -313,6 +342,8 @@ def main(argv: Iterable[str] | None = None) -> int:
         return command_list(args.scenarios_root)
     if args.command == "list":
         return command_scenario_list(args.module, args.deployment_root, args.service, args.services, args.provider)
+    if args.command == "count":
+        return command_count(args.scenarios_root)
     if args.command == "scenario-list":
         return command_scenario_list(args.module, args.deployment_root, args.service, args.services, args.provider)
     if args.command == "describe":
