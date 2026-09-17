@@ -10,6 +10,18 @@ workflows without relying on production resources.
 > publicly accessible resources or excessive permissions. Never use them in a
 > production account or subscription. Review the Terraform plan, use a
 > disposable environment, and destroy every deployment when testing is done.
+>
+> 
+## Use cases
+
+This repository provides repeatable Terraform scenarios that intentionally model cloud-security misconfigurations. Use them only in approved, disposable cloud environments.
+
+- **Validate CSPM and CIEM tooling:** confirm that security platforms identify known configuration and identity risks.
+- **Test detection rules:** verify that new or updated rules detect the intended resources before release.
+- **Run regression and integration tests:** check that findings, alerts, ticketing, SIEM ingestion, and remediation workflows continue to work after changes.
+- **Build security labs and demonstrations:** create temporary, realistic examples for hands-on training, product demos, and control validation.
+- **Support compliance testing:** exercise controls for public exposure, insecure transport, weak encryption settings, and overly broad permissions.
+
 
 ## Safety model
 
