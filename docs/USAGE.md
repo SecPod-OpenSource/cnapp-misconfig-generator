@@ -5,6 +5,18 @@ This guide provides the safe, sequential workflow for one scenario at a time. It
 > [!CAUTION]
 > `provision --apply` runs `terraform apply -auto-approve` after safety checks. It may create publicly accessible, excessively privileged, and billable resources. Verify the target environment and always clean up.
 
+
+## Use cases
+
+This repository provides repeatable Terraform scenarios that intentionally model cloud-security misconfigurations. Use them only in approved, disposable cloud environments.
+
+- **Validate CSPM and CIEM tooling:** confirm that security platforms identify known configuration and identity risks.
+- **Test detection rules:** verify that new or updated rules detect the intended resources before release.
+- **Run regression and integration tests:** check that findings, alerts, ticketing, SIEM ingestion, and remediation workflows continue to work after changes.
+- **Build security labs and demonstrations:** create temporary, realistic examples for hands-on training, product demos, and control validation.
+- **Support compliance testing:** exercise controls for public exposure, insecure transport, weak encryption settings, and overly broad permissions.
+
+
 ## 1. Prerequisites
 
 Install Python 3.10+, Terraform
